@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Rekap · Catatan Keuangan Pribadi</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23F5F4F0'/%3E%3Ctext x='7' y='24' font-family='Georgia,serif' font-size='21' fill='%230E6B4F'%3ER%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Lewati ke konten</a>
+
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">Rekap</span>
+        <span class="brand-sub">keuangan pribadi</span>
+      </div>
+      <nav class="nav" aria-label="Navigasi utama">
+        <a href="#dasbor">Dasbor</a>
+        <a href="#transaksi">Transaksi</a>
+        <a href="#anggaran">Anggaran</a>
+      </nav>
+      <p class="sidebar-note">Data tersimpan di browser ini saja. Tidak ada server, tidak ada akun.</p>
+    </aside>
+
+    <main id="main">
+      <div class="banner" id="banner-storage" hidden></div>
+
+      <!-- ============ DASBOR ============ -->
+      <section class="view" id="view-dasbor" aria-labelledby="t-dasbor">
+        <div class="view-head">
+          <h1 id="t-dasbor" tabindex="-1">Dasbor</h1>
+          <div class="month-nav">
+            <button type="button" class="month-btn" data-action="month-prev" aria-label="Bulan sebelumnya">&#8249;</button>
+            <span class="month-label" id="month-label"></span>
+            <button type="button" class="month-btn" data-action="month-next" aria-label="Bulan berikutnya">&#8250;</button>
+          </div>
+        </div>
+
+        <section class="panel" aria-labelledby="l-balance">
+          <div class="panel-label" id="l-balance">Saldo keseluruhan</div>
+          <div class="balance" id="dash-balance">Rp 0</div>
+          <p class="panel-sub" id="dash-balance-sub">Belum ada transaksi tercatat.</p>
+          <div class="stats" id="dash-stats"></div>
+        </section>
+
+        <section class="panel" aria-labelledby="l-cats">
+          <div class="panel-label" id="l-cats">Pengeluaran per kategori</div>
+          <div id="dash-cats"></div>
+        </section>
+
+        <section class="panel" aria-labelledby="l-recent">
+          <div class="panel-label" id="l-recent">Transaksi terakhir</div>
+          <div id="dash-recent"></div>
+        </section>
+      </section>
+
+      <!-- ============ TRANSAKSI ============ -->
+      <section class="view" id="view-transaksi" hidden aria-labelledby="t-transaksi">
+        <div class="view-head">
+          <h1 id="t-transaksi" tabindex="-1">Transaksi</h1>
+          <button type="button" class="btn ghost" data-action="export">Unduh CSV</button>
+        </div>
+
+        <section class="panel" aria-labelledby="l-add">
+          <div class="panel-label" id="l-add">Catat transaksi</div>
+          <form id="txn-form" novalidate>
+            <div class="field-row">
+              <fieldset class="field radios" id="type-group">
+                <legend class="field-label">Jenis</legend>
+                <label class="radio-pill"><input type="radio" id="txn-type-out" name="txn-type" value="out" checked><span>Pengeluaran</span></label>
+                <label class="radio-pill"><input type="radio" id="txn-type-in" name="txn-type" value="in"><span>Pemasukan</span></label>
+              </fieldset>
+              <div class="field">
+                <label class="field-label" for="t-cat">Kategori</label>
+                <select id="t-cat" class="input"></select>
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field grow">
+                <label class="field-label" for="f-desc">Deskripsi</label>
+                <input type="text" id="f-desc" class="input" placeholder="contoh: makan siang kantin" autocomplete="off">
+              </div>
+              <div class="field">
+                <label class="field-label" for="f-amount">Jumlah (Rp)</label>
+                <input type="text" id="f-amount" class="input" inputmode="numeric" placeholder="50000" autocomplete="off">
+              </div>
+              <div class="field">
+                <label class="field-label" for="f-date">Tanggal</label>
+                <input type="date" id="f-date" class="input">
+              </div>
+            </div>
+            <p class="form-error" id="form-error" role="alert" hidden></p>
+            <button type="submit" class="btn">Catat transaksi</button>
+          </form>
+        </section>
+
+        <section class="panel" aria-labelledby="l-list">
+          <div class="panel-head-row">
+            <div class="panel-label" id="l-list">Riwayat</div>
+            <div class="filters" id="txn-filters">
+              <label class="f-item"><span class="f-label">Bulan</span><select id="f-month" class="input small"></select></label>
+              <label class="f-item"><span class="f-label">Jenis</span>
+                <select id="f-type" class="input small">
+                  <option value="all">Semua</option>
+                  <option value="in">Masuk</option>
+                  <option value="out">Keluar</option>
+                </select>
+              </label>
+              <label class="f-item"><span class="f-label">Kategori</span><select id="f-cat" class="input small"></select></label>
+              <span class="count" id="txn-count" aria-live="polite"></span>
+            </div>
+          </div>
+          <div id="txn-list"></div>
+        </section>
+      </section>
+
+      <!-- ============ ANGGARAN ============ -->
+      <section class="view" id="view-anggaran" hidden aria-labelledby="t-anggaran">
+        <div class="view-head">
+          <h1 id="t-anggaran" tabindex="-1">Anggaran</h1>
+        </div>
+
+        <section class="panel" aria-labelledby="l-bud">
+          <div class="panel-label" id="l-bud">Anggaran bulanan</div>
+          <p class="panel-sub">Berlaku untuk setiap bulan. Kosongkan kategori yang tidak kamu batasi.</p>
+          <form id="budget-form" novalidate>
+            <div class="field">
+              <label class="field-label" for="b-total">Total pengeluaran per bulan (Rp)</label>
+              <input type="text" id="b-total" class="input" inputmode="numeric" placeholder="5000000" autocomplete="off">
+            </div>
+            <div class="field-label sub">Per kategori (opsional)</div>
+            <div class="budget-grid">
+              <div class="field"><label class="field-label" for="b-cat-makan">Makan</label><input type="text" id="b-cat-makan" class="input" inputmode="numeric" placeholder="0" autocomplete="off"></div>
+              <div class="field"><label class="field-label" for="b-cat-transport">Transport</label><input type="text" id="b-cat-transport" class="input" inputmode="numeric" placeholder="0" autocomplete="off"></div>
+              <div class="field"><label class="field-label" for="b-cat-belanja">Belanja</label><input type="text" id="b-cat-belanja" class="input" inputmode="numeric" placeholder="0" autocomplete="off"></div>
+              <div class="field"><label class="field-label" for="b-cat-tagihan">Tagihan</label><input type="text" id="b-cat-tagihan" class="input" inputmode="numeric" placeholder="0" autocomplete="off"></div>
+              <div class="field"><label class="field-label" for="b-cat-kesehatan">Kesehatan</label><input type="text" id="b-cat-kesehatan" class="input" inputmode="numeric" placeholder="0" autocomplete="off"></div>
+              <div class="field"><label class="field-label" for="b-cat-hiburan">Hiburan</label><input type="text" id="b-cat-hiburan" class="input" inputmode="numeric" placeholder="0" autocomplete="off"></div>
+              <div class="field"><label class="field-label" for="b-cat-lainnya">Lainnya</label><input type="text" id="b-cat-lainnya" class="input" inputmode="numeric" placeholder="0" autocomplete="off"></div>
+            </div>
+            <button type="submit" class="btn">Simpan anggaran</button>
+          </form>
+          <div class="budget-status" id="budget-status"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div id="modal-root" hidden></div>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
